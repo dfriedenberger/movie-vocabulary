@@ -1,0 +1,283 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>de.frittenburger.movie-vocabulary</groupId>
+	<artifactId>movie-vocabulary</artifactId>
+	<version>1.0.0</version>
+	<name>Vocabulary from Movie Subtitles</name>
+
+
+	<properties>
+		<!-- Config -->
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+		<!-- Build config-->
+		<mainClass>de.frittenburger.movievocabulary.MovieVocabularyApplication</mainClass>
+		<docker.tag>${git.branch}.${git.commit.time}</docker.tag>
+		<docker.repository>frittenburger-movie-vocabulary</docker.repository>
+
+		<!-- Versions-->
+		<swagger.version>1.5.21</swagger.version> 
+		<swagger.codegen.version>2.3.1</swagger.codegen.version> 
+		<swagger.input>${project.basedir}/src/main/resources/swagger/api.yaml</swagger.input>
+		<swagger2markup.plugin.version>1.3.7</swagger2markup.plugin.version>
+		<swagger2markup.extension.version>1.3.1</swagger2markup.extension.version>        
+
+ 		<!-- Versions - tesing Libraries -->
+		<junit.version>4.12</junit.version>
+		<assertj.version>3.12.2</assertj.version>
+		<mockito.version>2.26.0</mockito.version>
+	
+
+	</properties>
+
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.1.6.RELEASE</version>
+	</parent>
+
+	<dependencies>
+	
+		<!-- swagger for generating restr api's -->
+		<dependency>
+			<groupId>io.swagger</groupId>
+			<artifactId>swagger-core</artifactId>
+			<version>${swagger.version}</version>
+		</dependency>
+	
+		<!-- Include the web starter _without_tomcat_ (we use jetty) -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-tomcat</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		
+		<!-- We use jetty in our spring boot projects -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-jetty</artifactId>
+		</dependency>
+		
+	    <!-- for health check /actuator/health -->
+		<dependency>
+    		<groupId>org.springframework.boot</groupId>
+    		<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+		
+		<!-- Add thymeleaf templating engine support -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-thymeleaf</artifactId>
+		</dependency>
+		
+		<!-- Useful starter for tests -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		
+		<!-- hot swapping, disable cache for template, enable live reload -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-devtools</artifactId>
+			<optional>true</optional>
+		</dependency>
+		
+		<!-- apache commons IO -->
+        <dependency>
+          <groupId>commons-io</groupId>
+          <artifactId>commons-io</artifactId>
+          <version>2.5</version>
+        </dependency>
+		
+		
+		 <dependency>
+           <groupId>edu.stanford.nlp</groupId>
+           <artifactId>stanford-corenlp</artifactId>
+           <version>3.9.2</version>
+         </dependency>
+     
+       <dependency>
+         <groupId>edu.stanford.nlp</groupId>
+         <artifactId>stanford-corenlp</artifactId>
+         <version>3.9.2</version>
+         <classifier>models-german</classifier>
+       </dependency>
+       
+       <dependency>
+         <groupId>edu.stanford.nlp</groupId>
+         <artifactId>stanford-corenlp</artifactId>
+         <version>3.9.2</version>
+         <classifier>models-spanish</classifier>
+       </dependency>
+       
+       <dependency>
+         <groupId>edu.stanford.nlp</groupId>
+         <artifactId>stanford-corenlp</artifactId>
+         <version>3.9.2</version>
+         <classifier>models-english</classifier>
+       </dependency>
+		
+		<dependency>
+            <groupId>com.cybozu.labs</groupId>
+            <artifactId>langdetect</artifactId>
+            <version>1.1-20120112</version>
+        </dependency>
+		
+	   <dependency>
+    	  <groupId>com.amazonaws</groupId>
+    	  <artifactId>aws-java-sdk</artifactId>
+    	  <version>1.11.510</version>
+	   </dependency>
+		
+		
+		<!-- Test -->
+        <!-- assertj - Fluent assertions for java-->
+		<dependency>
+			<groupId>org.assertj</groupId>
+			<artifactId>assertj-core</artifactId>
+			<version>${assertj.version}</version>
+			<scope>test</scope>
+		</dependency>
+		
+		<!-- junit for using tests outside of eclipse-->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+			<scope>test</scope>
+		</dependency>
+		
+		<!-- mockito libray for mocking -->
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<version>${mockito.version}</version>
+			<scope>test</scope>
+		</dependency>
+		
+	</dependencies>
+
+	<build>
+		<plugins>
+		
+			<plugin>
+				<groupId>io.swagger</groupId>
+				<artifactId>swagger-codegen-maven-plugin</artifactId>
+				<version>${swagger.codegen.version}</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<inputSpec>src/main/resources/swagger/api.yaml</inputSpec>
+							<language>spring</language>
+							<configOptions>
+								<sourceFolder>src/main/java</sourceFolder>
+								<library>spring-mvc</library>
+								<dateLibrary>java8</dateLibrary>
+								<useTags>true</useTags>
+								<apiPackage>${project.groupId}.api</apiPackage>
+								<modelPackage>${project.groupId}.model</modelPackage>
+								<interfaceOnly>true</interfaceOnly>
+							</configOptions>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+		
+			<!-- To display plugin updates use
+			 mvn versions:display-plugin-updates -->
+
+		
+	
+			<!-- deactivate deployment to maven repository,
+			     we use docker:push instead -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<version>2.8</version>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>repackage</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- plugin for creating docker image -->
+			<plugin>
+				<groupId>com.spotify</groupId>
+				<artifactId>dockerfile-maven-plugin</artifactId>
+				<version>1.4.10</version>
+				<executions>
+					<execution>
+						<id>default</id>
+						<goals>
+							<goal>build</goal>
+							<goal>push</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<!-- 
+						<dockerfile>src/main/docker/Dockerfile</dockerfile> 
+						<contextDirectory>.</contextDirectory>
+						funktioniert in aktueller Version 1.4.12 noch nicht / siehe STREC-255 
+					-->
+					<repository>${docker.repository}</repository>
+					<tag>${docker.tag}</tag>
+					<useMavenSettingsForAuth>true</useMavenSettingsForAuth>
+					<buildArgs>
+						<JAR_FILE>target/${project.build.finalName}.jar</JAR_FILE>
+					</buildArgs>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>pl.project13.maven</groupId>
+				<artifactId>git-commit-id-plugin</artifactId>
+				<version>2.2.4</version>
+				<executions>
+					<execution>
+						<phase>validate</phase>
+						<id>get-the-git-infos</id>
+						<goals>
+							<goal>revision</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<dotGitDirectory>${project.basedir}/.git</dotGitDirectory>
+					<verbose>true</verbose>
+					<generateGitPropertiesFile>true</generateGitPropertiesFile>
+					<generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties</generateGitPropertiesFilename>
+					<dateFormat>yyyyMMdd-HHmmss</dateFormat>					
+					<!--  human-readable part of the version number -->
+					<excludeProperties>						<!-- exclude user references -->
+						<excludeProperty>git.user.*</excludeProperty>
+						<excludeProperty>git.build.user.*</excludeProperty>
+						<excludeProperty>git.commit.user.*</excludeProperty>
+					</excludeProperties>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>

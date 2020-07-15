@@ -1,0 +1,71 @@
+swagger: '2.0'
+info:
+  description: >-
+    This is a tempalte service .
+  version: 1.0.0
+  title: Simple Rest service
+host: 'localhost'
+basePath: '/api/v1'
+tags:
+  - name: template
+    description: Template Service.
+schemes:
+  - http
+paths:
+  /items:
+    get:
+      tags:
+       - template
+      summary: get a list of item id's
+      operationId: listItems
+      produces:
+        - application/json
+      parameters:
+        - in: query
+          name: offset
+          type: integer
+          description: The number of items to skip before starting to collect the result set.
+        - in: query
+          name: limit
+          type: integer
+          description: The maximum count numbers of items to return.
+      responses:
+        '200':
+          description: List of Items.
+          schema:
+            type: "array"
+            items:
+              type: "string"
+    
+  /items/{id}:
+    get:
+      tags:
+       - template
+      summary: Get data for given id.
+      operationId: getItem
+      produces:
+        - application/json
+      parameters:
+        - name: "id"
+          in: path
+          description: "ID of Video"
+          required: true
+          type: "string"
+      responses:
+        '200':
+          description: Metadata for video.
+          schema:
+            $ref: "#/definitions/Item"
+        '404':
+          description: Video not found.      
+ 
+
+definitions:
+  Item:
+    type: object
+    properties:
+      id:
+        type: string
+      info:
+        type: string
+        

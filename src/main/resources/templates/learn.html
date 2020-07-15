@@ -1,0 +1,152 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+	
+		<title th:text="${header}">title place holder</title>
+	
+		<!-- Required meta tags -->
+	    <meta charset="utf-8">
+	    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	
+	    <!-- Bootstrap CSS -->
+	    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+		
+		
+		
+		<style>
+		
+        </style>
+		
+		
+	</head>
+	
+
+	<body>
+
+		<!-- handlebar templates -->
+	 	<script id="level-template" type="text/x-handlebars-template">
+	 	   <div class="level">
+			<h3 id="{{id}}">{{title}}</h3>
+			
+				<table class="table table-striped">
+				  <thead>
+				    <tr>
+				      <th scope="col">#</th>
+				      <th scope="col">Phrase</th>
+				      <th scope="col">&Uuml;bersetzung</th>
+				    </tr>
+				  </thead>
+				  <tbody>
+				    {{{rows}}}
+				  </tbody>
+				</table>
+				
+		  </div>
+		</script>
+		
+		<script id="row-template" type="text/x-handlebars-template">
+		    <tr>
+		      <th scope="row">{{ix}}</th>
+		      <td>{{question}}</td>
+		      <td>{{answer}}</td>
+		    </tr>
+		</script>
+
+		<script id="content-item-template" type="text/x-handlebars-template">
+		  	<li><a href="#{{id}}">{{title}}</a></li>
+		</script>
+
+	
+
+		<main role="main">
+
+			<!-- Main jumbotron for a primary marketing message or call to action -->
+			<div class="jumbotron">
+				<div class="container">
+					<h1 th:text="${header}">header place holder</h1>
+				</div>
+			</div>
+			
+			<div class="container">
+				<ul id="content">
+	    		</ul>
+			</div>
+			<div id="vocabulary" class="container">
+							
+				
+
+			</div> <!-- /container -->
+
+
+
+		</main>
+
+		<footer class="container">
+			<p>&copy; frittenburger.de 2020</p>
+		</footer>
+
+		<script src="../js/jquery-3.4.1.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+
+		<script src="../js/handlebars-v4.1.2.js"></script>
+		
+	   <script>
+	
+			 var movie = '[[${movie}]]';
+			
+			 $( document ).ready(function() {
+			 
+			    var levelSource = document.getElementById("level-template").innerHTML;
+				var levelTemplate = Handlebars.compile(levelSource);
+		
+				var rowSource = document.getElementById("row-template").innerHTML;
+				var rowTemplate = Handlebars.compile(rowSource);
+			    
+			 	var contentItemSource = document.getElementById("content-item-template").innerHTML;
+				var contentItemTemplate = Handlebars.compile(contentItemSource);
+			 
+			    function getLevel(levelnr)
+			    {
+			        var maxlevel = levelnr;
+			        if(maxlevel >= 7) maxlevel = 100;
+			 
+				 	$.get( "../cards/"+movie+"?minlevel="+levelnr+"&maxlevel="+maxlevel, function( data ) {
+				 	
+				 		console.log(data);
+				 		
+				 		var rows = "";
+				 		$.each(data, function( index, value ) {
+		 					rows += rowTemplate({
+		 						ix: index + 1,
+								question: value.question,
+								answer : value.answer
+							});
+						});
+				 		
+				 		var content = $(contentItemTemplate({
+					 	    id: "level"+(levelnr+1),
+		                    title: "Level "+(levelnr+1)+ " ("+data.length+" Vokabeln)",
+		                }));
+				 		
+					 	var level = $(levelTemplate({
+					 	    id: "level"+(levelnr+1),
+		                    title: "Level "+(levelnr+1),
+							rows: rows
+		                }));
+		                
+		                $("#content").append(content);
+				 		$("#vocabulary").append(level);
+				 		if(maxlevel != 100)
+				 			getLevel(levelnr + 1);
+				 	});
+			 	}
+			 	getLevel(0);
+			 
+			 });
+		</script>
+
+
+	</body>
+
+</html>
