@@ -1,0 +1,113 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<title th:text="${header}">title place holder</title>
+		
+		<!-- Required meta tags -->
+	    <meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="stylesheet" href="/css/vorlage.css" >
+	    <link rel="stylesheet" href="/css/bootstrap-4.5.0.min.css">
+
+	</head>
+	
+	<body>
+
+
+		<!-- handlebar templates -->
+	 	<script id="movie-template" type="text/x-handlebars-template">
+	 	<li class="media my-4">
+		    <img class="mr-3" width="50" src="{{poster}}">
+		    <div class="media-body">
+		      <h5 class="mt-0 mb-1">{{title}} / {{year}}</h5>
+		 	  <a href="/edit/{{imdbID}}">{{imdbID}}</a>
+		    </div>
+  		</li>
+		</script>
+
+
+		<main role="main">
+
+			<!-- Main jumbotron for a primary marketing message or call to action -->
+			<div class="jumbotron">
+				<div class="container">
+					<h1>Suche</h1>
+					<p>Gib den Titel des Films ein den du suchst.</p><br>
+				</div>
+			</div>
+
+			<div class="container">
+			
+				
+				<div class="row">
+					<div class="col">
+						<!-- Search form -->
+						<input id="search" class="form-control" type="text" placeholder="Search Movies" aria-label="Search">
+						<ul id="movies" class="list-unstyled">
+					
+						</ul>
+					</div>
+				</div>
+				
+							                
+ 
+ 				
+				
+
+			</div> <!-- /container -->
+
+
+
+		</main>
+
+		<footer class="container">
+			<p>&copy; frittenburger.de 2020</p>
+		</footer>
+
+		<script src="/js/jquery-3.4.1.min.js"></script>
+		<script src="/js/handlebars-v4.1.2.js"></script>
+		
+	   <script>
+	   
+	   $( document ).ready(function() {
+   
+   
+            var movieSource = document.getElementById("movie-template").innerHTML;
+		    var movieTemplate = Handlebars.compile(movieSource);
+
+			$("#search").on('keypress',function(e) {
+			    if(e.which == 13) {
+			        $.get( "/api/v1/search?q="+$(this).val(), function( data ) {
+						console.log(data);
+						
+						$("#movies").empty();
+						
+						var l = data.movies.length;
+						for (var i = 0; i < l; i++) {
+							
+				   			var movie = data.movies[i];
+				   			console.log(movie);
+				   			
+				   			var poster = movie.poster;
+				   			if(poster == "N/A")
+				   				poster = "/img/noposter.png"
+				   			
+				   			var movieObj = $(movieTemplate({ 
+				    			title: movie.title,
+				    			year: movie.year,
+				    			imdbID: movie.imdbID,
+				    			poster: poster
+				    		}));
+				    		
+				    		$("#movies").append(movieObj);
+						}
+					});
+			    }
+			});
+			
+	   });
+	   </script>
+
+	</body>
+
+</html>

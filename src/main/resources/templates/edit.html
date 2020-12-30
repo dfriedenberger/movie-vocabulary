@@ -1,0 +1,200 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<title th:text="${header}">title place holder</title>
+		
+		<!-- Required meta tags -->
+	    <meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		
+		<link rel="stylesheet" href="/css/vorlage.css" >
+	    <link rel="stylesheet" href="/css/bootstrap-4.5.3.min.css">
+		
+		
+		
+	
+	   
+		
+	</head>
+	
+
+	<body>
+
+		
+
+		<!-- modal -->
+		<!-- Creates the bootstrap modal where the image will appear -->
+		<div class="modal fade" id="imagemodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		  <div class="modal-dialog">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <h4 class="modal-title" id="myModalLabel">Vorschau</h4>
+		        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+		      </div>
+		      <div class="modal-body">
+		        <center>
+		        	<img src="" id="imagepreview">
+		        </center>
+		      </div>
+		      <div class="modal-footer">
+		      </div>
+		    </div>
+		  </div>
+		</div>
+
+
+		<main role="main">
+
+			<!-- Main jumbotron for a primary marketing message or call to action -->
+			<div class="jumbotron">
+				<div class="container">
+					<h1>Import Movie</h1>
+				</div>
+			</div>
+
+			<div class="container">
+			
+				<!-- form -->
+				<form method="post" action="/save/">
+			
+					<div class="form-group row">
+					    <label for="imdbId" class="col-sm-2 col-form-label">IMDB - ID</label>
+					    <div class="col-sm-10">
+					      <input type="text" class="form-control" name="imdbId">
+					    </div>
+		  			</div>
+		  			
+		  			<div class="form-group row">
+					    <label for="title" class="col-sm-2 col-form-label">Titel</label>
+					    <div class="col-sm-10">
+					      <input type="text" class="form-control" name="title">
+					    </div>
+		  			</div>
+		  			
+		  			<div class="form-group row">
+					    <label for="year" class="col-sm-2 col-form-label">Jahr</label>
+					    <div class="col-sm-10">
+					      <input type="text" class="form-control" name="year">
+					    </div>
+		  			</div>
+		  			
+		  			<div class="form-group row">
+					    <label for="director" class="col-sm-2 col-form-label">Regisseur</label>
+					    <div class="col-sm-10">
+					      <input type="text" class="form-control" name="director">
+					    </div>
+		  			</div>
+		  			
+		  			<div class="form-group row">
+					    <label for="actors" class="col-sm-2 col-form-label">Schauspieler</label>
+					    <div class="col-sm-10">
+					      <input type="text" class="form-control" name="actors">
+					    </div>
+		  			</div>
+		  			
+		  			<div class="form-group row">
+					    <label for="runtime" class="col-sm-2 col-form-label">Laufzeit</label>
+					    <div class="col-sm-10">
+					      <input type="text" class="form-control" name="runtime">
+					    </div>
+		  			</div>
+		  			
+		  			<div class="form-group row">
+					    <label for="genre" class="col-sm-2 col-form-label">Genre</label>
+					    <div class="col-sm-10">
+					      <input type="text" class="form-control" name="genre">
+					    </div>
+		  			</div>
+		  			
+		  			<div class="form-group row">
+					    <label for="country" class="col-sm-2 col-form-label">Land</label>
+					    <div class="col-sm-10">
+					      <input type="text" class="form-control" name="country">
+					    </div>
+		  			</div>
+		  			
+		  			<div class="form-group row">
+					    <label for="language" class="col-sm-2 col-form-label">Sprache</label>
+					    <div class="col-sm-10">
+					      <input type="text" class="form-control" name="language">
+					    </div>
+		  			</div>
+		  			
+		  			<div class="form-group row">
+					    <label for="poster" class="col-sm-2 col-form-label">Plakat</label>
+					    <div class="col-sm-9">
+					      <input type="text" class="form-control" name="poster">
+					    </div>
+					    <div class="col-sm-1 showimage">
+						    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-image" viewBox="0 0 16 16">
+							  <path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
+							  <path d="M2.002 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2h-12zm12 1a1 1 0 0 1 1 1v6.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12V3a1 1 0 0 1 1-1h12z"/>
+							</svg>
+						</div>
+		  			</div>
+ 			 
+		  			<div class="form-group row">
+		  				<div class="col-sm-2">
+	   						<button type="submit" class="btn btn-primary">Speichern</button>
+	   					</div>
+	   				</div>
+				</form>
+			
+				
+ 
+
+			</div> <!-- /container -->
+
+
+
+
+
+
+		</main>
+
+		<footer class="container">
+			<p>&copy; frittenburger.de 2020</p>
+		</footer>
+
+		<script src="/js/jquery-3.4.1.min.js"></script>
+		<script src="/js/bootstrap-4.5.3.bundle.min.js"></script>
+		<script src="/js/handlebars-v4.1.2.js"></script>
+		
+	   <script>
+	   
+	   $( document ).ready(function() {
+   
+   
+   			var movieId = '[[${movieId}]]';
+   			
+   			$('input[name ="imdbId"]').val(movieId);
+
+ 			$.get( "/api/v1/omdb/"+movieId, function( data ) {
+ 				console.log(data);
+	   			$('input[name ="title"]').val(data.title);
+	   			$('input[name ="year"]').val(data.year);
+ 			 	$('input[name ="director"]').val(data.director);
+ 			 	$('input[name ="actors"]').val(data.actors);
+ 			 	$('input[name ="runtime"]').val(data.runtime);
+ 			 	$('input[name ="genre"]').val(data.genre);
+ 			 	$('input[name ="country"]').val(data.country);
+ 			 	$('input[name ="language"]').val(data.language);
+ 			 	$('input[name ="poster"]').val(data.poster);
+
+ 			 	 			 			
+			});
+        
+			
+			$(".showimage").on("click", function() {
+			    var input = $(this).closest('.form-group').find('input');
+   				$('#imagepreview').attr('src', $(input).val()); 
+   				$('#imagemodal').modal('show'); 
+			});
+			
+			
+	   });
+	   </script>
+
+	</body>
+
+</html>

@@ -97,35 +97,7 @@
           <artifactId>commons-io</artifactId>
           <version>2.5</version>
         </dependency>
-		
-		
-		 <dependency>
-           <groupId>edu.stanford.nlp</groupId>
-           <artifactId>stanford-corenlp</artifactId>
-           <version>3.9.2</version>
-         </dependency>
-     
-       <dependency>
-         <groupId>edu.stanford.nlp</groupId>
-         <artifactId>stanford-corenlp</artifactId>
-         <version>3.9.2</version>
-         <classifier>models-german</classifier>
-       </dependency>
-       
-       <dependency>
-         <groupId>edu.stanford.nlp</groupId>
-         <artifactId>stanford-corenlp</artifactId>
-         <version>3.9.2</version>
-         <classifier>models-spanish</classifier>
-       </dependency>
-       
-       <dependency>
-         <groupId>edu.stanford.nlp</groupId>
-         <artifactId>stanford-corenlp</artifactId>
-         <version>3.9.2</version>
-         <classifier>models-english</classifier>
-       </dependency>
-		
+				
 		<dependency>
             <groupId>com.cybozu.labs</groupId>
             <artifactId>langdetect</artifactId>
@@ -138,7 +110,20 @@
     	  <version>1.11.510</version>
 	   </dependency>
 		
-		
+		<!-- https://mvnrepository.com/artifact/com.github.wtekiela/opensub4j -->
+		<dependency>
+    		<groupId>com.github.wtekiela</groupId>
+    		<artifactId>opensub4j</artifactId>
+    		<version>0.3.2</version>
+		</dependency>
+
+
+		<dependency>
+  			<groupId>org.apache.any23</groupId>
+  			<artifactId>apache-any23-encoding</artifactId>
+  			<version>2.4</version>
+		</dependency>	
+			
 		<!-- Test -->
         <!-- assertj - Fluent assertions for java-->
 		<dependency>

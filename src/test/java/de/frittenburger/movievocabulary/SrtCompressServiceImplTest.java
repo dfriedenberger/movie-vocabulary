@@ -7,8 +7,8 @@ import java.util.List;
 
 import org.junit.Test;
 
-import de.frittenburger.movievocabulary.impl.SrtCompressServiceImpl;
-import de.frittenburger.movievocabulary.interfaces.SrtCompressService;
+import de.frittenburger.movievocabulary.convert.impl.SrtCompressServiceImpl;
+import de.frittenburger.movievocabulary.convert.interfaces.SrtCompressService;
 import de.frittenburger.movievocabulary.model.SrtRecord;
 
 public class SrtCompressServiceImplTest {

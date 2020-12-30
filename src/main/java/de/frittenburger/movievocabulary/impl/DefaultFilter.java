@@ -1,6 +1,6 @@
 package de.frittenburger.movievocabulary.impl;
 
-import de.frittenburger.movievocabulary.interfaces.Filter;
+import de.frittenburger.movievocabulary.convert.interfaces.Filter;
 
 
 public class DefaultFilter implements Filter {
