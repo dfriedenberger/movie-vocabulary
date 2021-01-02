@@ -1,14 +1,10 @@
 package de.frittenburger.movievocabulary.controller;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -24,8 +20,6 @@ import de.frittenburger.movievocabulary.impl.MovieDatabaseImpl;
 import de.frittenburger.movievocabulary.interfaces.MovieDatabase;
 import de.frittenburger.movievocabulary.model.IMDbId;
 import de.frittenburger.movievocabulary.model.MovieMetadata;
-import de.frittenburger.movievocabulary.opensubtitle.impl.OpenSubtitleServiceImpl;
-import de.frittenburger.movievocabulary.opensubtitle.interfaces.OpenSubtitleService;
 
 
 
@@ -43,18 +37,45 @@ public class AdminController {
 	}
 	
 	
+	@RequestMapping(value = "/create/{id}", method = RequestMethod.GET)
+	public String createMovie(@RequestHeader Map<String, String> headers,HttpServletRequest request,Map<String, Object> model,@PathVariable(value="id") String id)  {
+	  
+		
+		try {
+			 IMDbId iMDbId = IMDbId.parse(id);
+			 if(movieDatabase.exists(iMDbId))
+			 {
+				 return "redirect:/edit/"+iMDbId.getId();
+			 }
+			 
+			 movieDatabase.create(iMDbId);
+			 
+			 
+			 model.put("movieId", iMDbId.getId());
+			 model.put("url", "/api/v1/omdb");
+			 return "edit";
+		} catch (ParseException | IOException e) {
+			logger.error(e);
+			throw new InternalErrorException();
+		}
+		
+	}
+	
+	
 	@RequestMapping(value = "/edit/{id}", method = RequestMethod.GET)
 	public String editMovie(@RequestHeader Map<String, String> headers,HttpServletRequest request,Map<String, Object> model,@PathVariable(value="id") String id)  {
 	  
+		
 		try {
 			 IMDbId iMDbId = IMDbId.parse(id);
 			 model.put("movieId", iMDbId.getId());
+			 model.put("url", "/api/v1/read");
+			 return "edit";
 		} catch (ParseException e) {
 			logger.error(e);
+			throw new InternalErrorException();
 		}
-	    
 		
-		return "edit";
 	}
 	
 	
@@ -64,11 +85,12 @@ public class AdminController {
 		try {
 			 IMDbId iMDbId = IMDbId.parse(id);
 			 model.put("movieId", iMDbId.getId());
+			 return "files";
 		} catch (ParseException e) {
 			logger.error(e);
+			throw new InternalErrorException();
 		}
 		
-		return "files";
 	}
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
 	public String saveMovie(HttpServletRequest request,Map<String, Object> model)  {
@@ -98,13 +120,17 @@ public class AdminController {
 	
 	
 	
-	@RequestMapping(value = "/movie/{id}", method = RequestMethod.GET)
-	public String movie(HttpServletRequest request,Map<String, Object> model,@PathVariable(value="id") String id) throws IOException {
+	@RequestMapping(value = "/review/{id}/{source}/{target}", method = RequestMethod.GET)
+	public String movie(HttpServletRequest request,Map<String, Object> model,
+			@PathVariable(value="id") String id,
+			@PathVariable(value="source") String sourceLanguage,
+			@PathVariable(value="target") String targetLanguage) throws IOException {
 		
-	    model.put("header", id);
-	    model.put("movie", id);
-		
-		return "movie";
+	    model.put("movieId", id);
+	    model.put("sourceLanguage", sourceLanguage);
+	    model.put("targetLanguage", targetLanguage);
+
+		return "review";
 	}
 	
 	

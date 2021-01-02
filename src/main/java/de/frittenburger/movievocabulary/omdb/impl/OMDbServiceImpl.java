@@ -2,7 +2,6 @@ package de.frittenburger.movievocabulary.omdb.impl;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -18,7 +17,6 @@ import org.apache.logging.log4j.Logger;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import de.frittenburger.movievocabulary.controller.AdminController;
 import de.frittenburger.movievocabulary.model.IMDbId;
 import de.frittenburger.movievocabulary.omdb.interfaces.OMDbService;
 import de.frittenburger.movievocabulary.omdb.model.OMDbMovie;

@@ -1,11 +1,52 @@
 package de.frittenburger.movievocabulary.process.interfaces;
 
-import java.io.IOException;
+import de.frittenburger.movievocabulary.process.model.ProcessorTaskStatus;
 
-public interface ProcessorTask {
+abstract public class ProcessorTask {
 
-	void run() throws Exception;
+	private ProcessorTaskStatus status = ProcessorTaskStatus.INIT;
+	private int progress = 0;
+	
+	private final ProcessorServiceType type;
+	private final String name;
 
-	String getName();
+	public ProcessorTask(ProcessorServiceType type, String name) {
+		this.type = type;
+		this.name = name;
+	}
+
+	public void setProcessorTaskStatus(ProcessorTaskStatus status) {
+		this.status = status;
+	}
+	
+	public ProcessorTaskStatus getProcessorTaskStatus() {
+		return status;
+	}
+	
+	public int getProgress() {
+		return progress;
+	}
+
+	public void setProgress(int progress) {
+		this.progress = progress;
+	}
+
+	public ProcessorServiceType getService() {
+		return type;
+	}
+	
+	public String getName() {
+		return name;
+	}
+
+	@Override
+	public String toString() {
+		return "ProcessorTask [status=" + status + ", type=" + type + ", name=" + name + "]";
+	}
+
+	
+
+
+
 
 }

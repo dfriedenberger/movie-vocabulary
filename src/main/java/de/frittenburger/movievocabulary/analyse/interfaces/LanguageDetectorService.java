@@ -5,13 +5,15 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.List;
 
+import de.frittenburger.movievocabulary.model.Language;
+
 public interface LanguageDetectorService {
 
 
-	String detect(List<String> examples);
+	Language detect(List<String> examples);
 
-	String detect(String text);
+	Language detect(String text);
 
-	String detect(File file, Charset charset) throws IOException;
+	Language detect(File file, Charset charset) throws IOException;
 
 }

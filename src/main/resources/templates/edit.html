@@ -166,10 +166,13 @@
    
    
    			var movieId = '[[${movieId}]]';
+   			var url = '[[${url}]]';
    			
    			$('input[name ="imdbId"]').val(movieId);
+   			
+   			
 
- 			$.get( "/api/v1/omdb/"+movieId, function( data ) {
+ 			$.get( url+"/"+movieId, function( data ) {
  				console.log(data);
 	   			$('input[name ="title"]').val(data.title);
 	   			$('input[name ="year"]').val(data.year);
@@ -180,7 +183,6 @@
  			 	$('input[name ="country"]').val(data.country);
  			 	$('input[name ="language"]').val(data.language);
  			 	$('input[name ="poster"]').val(data.poster);
-
  			 	 			 			
 			});
         

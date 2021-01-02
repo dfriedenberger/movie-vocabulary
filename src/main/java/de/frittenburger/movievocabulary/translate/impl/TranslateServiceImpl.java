@@ -1,11 +1,11 @@
-package de.frittenburger.movievocabulary.convert.impl;
+package de.frittenburger.movievocabulary.translate.impl;
 
-
-
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -25,31 +25,28 @@ import org.apache.logging.log4j.Logger;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import de.frittenburger.movievocabulary.convert.interfaces.NlpService;
+import de.frittenburger.movievocabulary.convert.impl.ConvertConfig;
 import de.frittenburger.movievocabulary.model.Language;
 import de.frittenburger.movievocabulary.model.Paragraph;
+import de.frittenburger.movievocabulary.translate.interfaces.TranslateService;
 
+public class TranslateServiceImpl implements TranslateService {
 
-public class NlpServiceImpl implements NlpService {
-
-	private static final Logger logger = LogManager.getLogger(NlpServiceImpl.class);
+	private static final Logger logger = LogManager.getLogger(TranslateServiceImpl.class);
 	private final String bearer;
 	private final String url;
 
 	
-	public NlpServiceImpl(File configFile) throws IOException {
+	public TranslateServiceImpl(File configFile) throws IOException {
 		Properties prop = new Properties();
 		prop.load(new FileInputStream(configFile));
 		this.bearer = prop.getProperty("bearer");
 		this.url = prop.getProperty("url");
 	}
 
-	// keytool -trustcacerts -keystore /c/Program\ Files/Java/jdk-11.0.8/lib/security/cacerts -storepass changeit -noprompt -importcert -file letsencrypt.cer
-
-	
 	@Override
-	public Paragraph parse(Language language,String text) throws UnsupportedOperationException, IOException {
-		
+	public List<String> translate(List<String> text,Language source,Language target) throws IOException {
+
 		HttpClient httpclient = HttpClients.createDefault();
 		HttpPost httppost = new HttpPost(this.url);
 
@@ -57,8 +54,9 @@ public class NlpServiceImpl implements NlpService {
 		httppost.setHeader(HttpHeaders.AUTHORIZATION, authHeader);
 		// Request parameters and other properties.
 		List<NameValuePair> params = new ArrayList<NameValuePair>(2);
-		params.add(new BasicNameValuePair("language", language.getLongName()));
-		params.add(new BasicNameValuePair("text", text));
+		params.add(new BasicNameValuePair("sourcelanguage", source.getShortName()));
+		params.add(new BasicNameValuePair("targetlanguage", target.getShortName()));
+		params.add(new BasicNameValuePair("text", String.join("\r\n",text)));
 		httppost.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
 
 		//Execute and get the response.
@@ -69,11 +67,19 @@ public class NlpServiceImpl implements NlpService {
 			throw new IOException("no response");
 
 		try (InputStream in = entity.getContent()) {
+			
+			List<String> result = new ArrayList<>();
+			
 			ObjectMapper mapper = new ObjectMapper();
 			JsonNode tree = mapper.readTree(in);
 			logger.trace("Status {}",tree.get("status").asText());
-			return mapper.treeToValue(tree.get("text"), Paragraph.class);
-
+			for(JsonNode n : tree.get("text"))
+			{
+				result.add(n.asText());
+			}			
+			if(result.size() != text.size())
+				throw new IOException(result.size() + " != " + text.size());
+			return result;
 	    }
 		
 	}
@@ -82,9 +88,18 @@ public class NlpServiceImpl implements NlpService {
 	
 	public static void main(String args[]) throws UnsupportedOperationException, IOException
 	{
-		Paragraph paragraph = new ConvertConfig().getNlpServiceInstance().parse(Language.spanish, "Yo vivo en Barcelona");
-		new ObjectMapper().writerWithDefaultPrettyPrinter().writeValue(System.out, paragraph);
+		List<String> text = new ArrayList<>();
+		text.add("Yo vivo en Barcelona.");
+		text.add("Yo");
+		text.add("vivo");
+		text.add("en");
+
+		
+		
+		List<String> res = new TranslateConfig().getTranslateServiceInstance().translate(text, Language.spanish, Language.german);
+		System.out.println(text+" => "+res);
 	}
 
 	
+
 }

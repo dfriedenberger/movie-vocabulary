@@ -1,0 +1,353 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<title>Review</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="stylesheet" href="/css/vorlage.css" >
+		<link rel="stylesheet" href="/css/bootstrap-4.5.0.min.css">
+		
+	</head>
+	
+
+	<body>
+
+		<!-- handlebar templates -->
+	 	<script id="sentence-template" type="text/x-handlebars-template">
+	 	   <div class="paragraph">
+			<h3>{{text}}</h3>
+			<div>
+				<span>RI={{readingIndex}}</span>
+			</div>
+			<table>
+				{{{rows}}}
+			</table>
+			<div class="commands clear">
+				<span class="command icon right save" data-command="save" style="display:none">
+					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-cloud-arrow-up" viewBox="0 0 16 16">
+					  <path fill-rule="evenodd" d="M7.646 5.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 6.707V10.5a.5.5 0 0 1-1 0V6.707L6.354 7.854a.5.5 0 1 1-.708-.708l2-2z"/>
+					  <path d="M4.406 3.342A5.53 5.53 0 0 1 8 2c2.69 0 4.923 2 5.166 4.579C14.758 6.804 16 8.137 16 9.773 16 11.569 14.502 13 12.687 13H3.781C1.708 13 0 11.366 0 9.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383zm.653.757c-.757.653-1.153 1.44-1.153 2.056v.448l-.445.049C2.064 6.805 1 7.952 1 9.318 1 10.785 2.23 12 3.781 12h8.906C13.98 12 15 10.988 15 9.773c0-1.216-1.02-2.228-2.313-2.228h-.5v-.5C12.188 4.825 10.328 3 8 3a4.53 4.53 0 0 0-2.941 1.1z"/>
+					</svg>
+				</span>
+				<span class="command icon left"  data-command="addrow">
+					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-plus-square" viewBox="0 0 16 16">
+					  <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
+					  <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+					</svg>
+				</span>
+				
+				<input type="hidden" class="validated" value="{{validated}}">
+				
+				<span class="command icon left unvalidate"  data-command="validate">
+					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-square" viewBox="0 0 16 16">
+  						<path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
+					</svg>
+				</span>
+				
+				<span class="command icon left validate"  data-command="unvalidate">
+					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="green" class="bi bi-check-square-fill" viewBox="0 0 16 16">
+					  <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm10.03 4.97a.75.75 0 0 1 .011 1.05l-3.992 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.75.75 0 0 1 1.08-.022z"/>
+					</svg>
+				</span>
+				
+			</div>
+		  </div>
+		</script>
+
+
+		<script id="row-template" type="text/x-handlebars-template">
+			<tr>
+				<td>
+					<span class="command icon" data-command="tolowercase" data-ref=".word">
+						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down" viewBox="0 0 16 16">
+						  <path fill-rule="evenodd" d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1z"/>
+						</svg>
+					</span>
+				</td>
+				<td><input data-token="text" class="word" value="{{text}}"></td>
+				<td><input data-token="partOfSpeech" value="{{partOfSpeech}}"></td>
+				<td><input data-token="namedEntity" value="{{namedEntity}}"></td>
+				<td><input type="number" data-token="level" size="4" value="{{level}}"></td>
+				<td>
+					<span class="command icon" data-command="tolowercase" data-ref=".translation">
+						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down" viewBox="0 0 16 16">
+						  <path fill-rule="evenodd" d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1z"/>
+						</svg>				
+					</span>
+				</td>
+				<td><input class="translation" value="{{translation}}"></td>
+				<td>
+					<span class="command icon" data-command="deleterow">
+						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+						  <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+						  <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4L4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+						</svg>
+					</span>
+				</td>
+			</tr>
+		</script>
+
+		<main role="main">
+
+			<!-- Main jumbotron for a primary marketing message or call to action -->
+			<div class="jumbotron">
+				<div class="container">
+					<h1 th:text="${movieId}">header place holder</h1>
+				</div>
+			</div>
+			<div id="info">
+				<table>
+					<tr><td>Abs&auml;tze</td><td id="paragraphs"></td></tr>
+					<tr><td>Verben</td><td id="verbs"></td></tr>
+					<tr><td>Substantive</td><td id="nouns"></td></tr>
+					<tr><td>Adjektive</td><td id="adjs"></td></tr>
+					<tr><td>Adverben</td><td id="advs"></td></tr>
+				</table>
+			</div>
+			
+
+			<div id="vocabulary" class="container">
+							
+				
+
+				<nav aria-label="Page navigation example">
+				  <ul class="pagination">
+				    <li class="page-item"><a class="page-link" href="#">
+					    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-left-fill" viewBox="0 0 16 16">
+  							<path d="M3.86 8.753l5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/>
+						</svg>
+				    </a></li>
+				    <li class="page-item"><a class="page-link" href="#">1</a></li>
+				    <li class="page-item"><a class="page-link" href="#">2</a></li>
+				    <li class="page-item"><a class="page-link" href="#">3</a></li>
+				    <li class="page-item"><a class="page-link" href="#">
+					    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-right-fill" viewBox="0 0 16 16">
+						  <path d="M12.14 8.753l-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z"/>
+						</svg>
+				    </a></li>
+				  </ul>
+				</nav>
+			</div> <!-- /container -->
+
+
+
+		</main>
+
+		<footer class="container">
+			<p>&copy; frittenburger.de 2020</p>
+		</footer>
+
+		
+  
+		<script src="/js/jquery-3.4.1.min.js"></script>
+		<script src="/js/handlebars-v4.1.2.js"></script>
+		<script src="/js/handlebars-extensions.js"></script>
+
+		<script>
+			var movie = '[[${movie}]]';
+		</script>
+		<script>
+		
+		
+		$( document ).ready(function() {
+		
+		   		var movieId = '[[${movieId}]]';
+				var sourceLanguage = '[[${sourceLanguage}]]';
+				var targetLanguage = '[[${targetLanguage}]]';
+		
+		
+				var sentenceSource = document.getElementById("sentence-template").innerHTML;
+				var sentenceTemplate = Handlebars.compile(sentenceSource);
+				
+				var rowSource = document.getElementById("row-template").innerHTML;
+				var rowTemplate = Handlebars.compile(rowSource);
+		
+		        changeParagraph = function(anker)
+		        {
+		            $(anker).find('.save').show('slow');
+		        }
+		        
+				showValidate= function(anker)
+		        {
+		        	var value = anker.find('.validated').val();
+		        	var validate = anker.find('.validate');
+		        	var unvalidate = anker.find('.unvalidate');
+		        	console.log('showValidate',value,value == 'true',validate,unvalidate);
+		        	
+		        	if(value == 'true')
+		        	{
+		        	    console.log("show validate");
+		        	    unvalidate.hide();
+		        		validate.show();
+		        	}
+		        	else
+		        	{
+		        	    console.log("show unvalidate");
+		        		validate.hide();
+		        		unvalidate.show();
+		        	}
+		        }
+		        
+		        save = function(anker)
+		        {
+		            var data = { 
+	                    text: anker.find('h3').text() , 
+	                    validated: anker.find('.validated').val(), 
+	                    tokens: [],
+		                translation: {} 
+		            };
+		
+		            anker.find('tr').each(function(ix,tr)
+		            {
+		            
+		            	token = {}
+		                $(tr).find('[data-token]').each(function(ix,value) {
+		                	var k = $(value).data("token");
+		                	var v = $(value).val().trim();
+		                	token[k] = v;
+		                });
+		                data.tokens.push(token);
+		                
+		                var key = token['text'];
+		                var translation = $(tr).find('.translation').val().trim();
+		                if(translation)
+		                {
+		                    data.translation[key] = translation;
+		                }
+		            });
+		
+		            console.log(data);
+		            $.ajax({
+		                url: "/api/v1/change/"+movieId+"/"+sourceLanguage+"/"+targetLanguage,
+		                type: 'POST',
+		                contentType: 'application/json',
+		                data: JSON.stringify(data),
+		                dataType: 'json'
+		            }).done(function() {
+		                $(anker).find('.save').hide('slow');
+		            });
+		
+		        }
+		
+		        addControls = function(html)
+		        {
+		            html.find(".command").click(function(ev){
+		                ev.preventDefault();
+		
+		                var cmd = $(this).data("command");
+		                var anker = $(this).closest(".paragraph");
+		                switch(cmd)
+		                {
+		                    case 'tolowercase':
+		                        var translation = $(this).closest("tr").find($(this).data("ref"));
+		                        var text = translation.val().toLowerCase();
+		                        translation.val(text);
+		                        changeParagraph(anker);
+		                        break;
+		                    case 'deleterow':
+		                        var target = $(this).closest("tr");
+		                        target.hide('slow', function(){ target.remove(); });
+		                        changeParagraph(anker);
+		                        break;
+		                    case 'addrow':
+		                        var row = $(rowTemplate({
+		                            word: "",
+		                            level : -1,
+		                            type : "",
+		                            translation: ""
+		                        }));
+		                        addControls(row);
+		                        row.hide();
+		                        anker.find("table tbody").append(row);
+		                        row.show('slow');
+		                        changeParagraph(anker);
+		                        break;
+		                    case 'save':
+		                        save(anker);
+		                        break;
+		                    case 'validate':
+		                    	anker.find(".validated").val(true);
+		                    	showValidate(anker);
+		                    	changeParagraph(anker);
+		                    	break;
+		                    case 'unvalidate':
+		                        anker.find(".validated").val(false);
+		                        showValidate(anker);
+		                    	changeParagraph(anker);
+		                    	break;
+		                    default:
+		                        console.log("Unknown command "+cmd);
+		                        break;
+		
+		                }
+		            });
+		
+		            html.find("input").change(function(ev){
+		                var anker = $(this).closest(".paragraph");
+		                changeParagraph(anker);
+		            });
+		
+		            html.find("select").change(function(ev){
+		                var anker = $(this).closest(".paragraph");
+		                changeParagraph(anker);
+		            });
+		        }
+		
+		        $.get( "/api/v1/statistics/"+movieId+"/"+sourceLanguage, function( data ) {
+		            console.log(data);
+		            $("#paragraphs").text(data.paragraphs);
+		            $("#verbs").text(data.verb);
+		            $("#nouns").text(data.noun);
+		            $("#adjs").text(data.adjective);
+		            $("#advs").text(data.adverb);
+		        });
+		
+		       		
+				$.get( "/api/v1/vocabulary/"+movieId+"/"+sourceLanguage+"/"+targetLanguage+"?offset=0&limit=15", function( data ) {
+		
+					$.each( data, function( ix , value ) {
+						  
+						console.log(value);
+		
+						var translation = value.translation;
+						var rows = "";
+		
+						$.each( value.tokens, function( ix, token ) {
+						  rows += rowTemplate({
+								text: token.text,
+								level : token.level,
+								partOfSpeech : token.partOfSpeech,
+								namedEntity : token.namedEntity,
+								translation: translation[token.text]
+							});
+						});
+		
+						var paragraph = $(sentenceTemplate({
+		                    text: value.text,
+		                    readingIndex: value.readingIndex,
+		                    validated: value.validated,
+							rows: rows
+		                }));
+		                showValidate(paragraph);
+		                addControls(paragraph);
+		
+						$("#vocabulary").append(paragraph);
+		
+		
+		            });
+		            
+		
+		            
+					
+		        });
+		        
+		
+		});
+		
+		
+		
+		</script>
+
+
+	</body>
+
+</html>

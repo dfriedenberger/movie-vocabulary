@@ -1,4 +1,4 @@
-package de.frittenburger.movievocabulary.impl;
+package de.frittenburger.movievocabulary.convert.impl;
 
 import de.frittenburger.movievocabulary.convert.interfaces.Filter;
 

@@ -3,6 +3,8 @@ package de.frittenburger.movievocabulary.convert.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.stereotype.Service;
+
 import de.frittenburger.movievocabulary.convert.interfaces.SrtCompressService;
 import de.frittenburger.movievocabulary.model.SrtRecord;
 

@@ -38,18 +38,40 @@
 			</form>
 		</script>
 
+
+		<script id="queue-template" type="text/x-handlebars-template">
+		 	<div class="row">
+				<div class="col-sm-2">
+			 		<span>{{name}}</span>
+				</div>
+				<div class="col-sm-1">
+			 		<span>{{status}}</span>			 		
+				</div>
+				<div class="col-sm-1">
+			 		<span>{{progress}} %</span>			 		
+				</div>
+				<div class="col-sm-8">
+			 		<span>{{ref}}</span>			 		
+				</div>
+			</div>
+		</script>
+		
 		<script id="inbound-template" type="text/x-handlebars-template">
 		 	<form class="row">
 		 	    
-				<div class="col-sm-4">
+				<div class="col-sm-3">
 			 		<span>{{name}}</span>
 				</div>
 				<div class="col-sm-2">
-			 		<span>{{charset}}</span>
+			 		<span>{{charset}}</span>			 		
+				</div>
+				<div class="col-sm-2">
+			 		<span>{{md5}}</span>			 		
 				</div>
 				<div class="col-sm-1">
 			 		<img src="/img/{{language}}.png" title="{{language}}">
 				</div>
+				
 			    <input type="hidden" name="name" value="{{name}}">
 				<div class="col-sm-4">
 					<button type="submit" class="btn btn-primary btn-sm convert">
@@ -71,6 +93,63 @@
 			</form>
 		</script>
 		
+			<script id="base-template" type="text/x-handlebars-template">
+		 	<form class="row">
+		 	    
+				<div class="col-sm-5">
+			 		<span>{{name}}</span>
+				</div>
+				
+				{{#if source}}
+			    <input type="hidden" name="source" value="{{source}}">
+			    {{/if}}
+				{{#if target}}
+			    <input type="hidden" name="target" value="{{target}}">
+			    {{/if}}
+			    
+			    <input type="hidden" name="name" value="{{name}}">
+			    <div class="col-sm-1">
+			    	{{#if translate}}
+				     <select class="form-control-sm" name="target">
+				     	  {{#each translate}}
+					      	<option>{{this}}</option>
+					      {{/each}}
+		    		 </select>
+		    		 {{/if}}
+			    </div>
+			    
+				<div class="col-sm-3">
+					{{#if translate}}
+					<button type="submit" class="btn btn-primary btn-sm translate">
+                		<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-gear" viewBox="0 0 16 16">
+  							<path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492zM5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0z"></path>
+  							<path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52l-.094-.319zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115l.094-.319z"></path>
+						</svg>
+                	 &Uuml;bersetzen
+              		</button>
+              		{{/if}}
+              		
+              		{{#if target}}
+              			<a href="/review/{{id}}/{{source}}/{{target}}" class="btn btn-primary btn-sm" role="button">
+	              			<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-binoculars" viewBox="0 0 16 16">
+  								<path d="M3 2.5A1.5 1.5 0 0 1 4.5 1h1A1.5 1.5 0 0 1 7 2.5V5h2V2.5A1.5 1.5 0 0 1 10.5 1h1A1.5 1.5 0 0 1 13 2.5v2.382a.5.5 0 0 0 .276.447l.895.447A1.5 1.5 0 0 1 15 7.118V14.5a1.5 1.5 0 0 1-1.5 1.5h-3A1.5 1.5 0 0 1 9 14.5v-3a.5.5 0 0 1 .146-.354l.854-.853V9.5a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5v.793l.854.853A.5.5 0 0 1 7 11.5v3A1.5 1.5 0 0 1 5.5 16h-3A1.5 1.5 0 0 1 1 14.5V7.118a1.5 1.5 0 0 1 .83-1.342l.894-.447A.5.5 0 0 0 3 4.882V2.5zM4.5 2a.5.5 0 0 0-.5.5V3h2v-.5a.5.5 0 0 0-.5-.5h-1zM6 4H4v.882a1.5 1.5 0 0 1-.83 1.342l-.894.447A.5.5 0 0 0 2 7.118V13h4v-1.293l-.854-.853A.5.5 0 0 1 5 10.5v-1A1.5 1.5 0 0 1 6.5 8h3A1.5 1.5 0 0 1 11 9.5v1a.5.5 0 0 1-.146.354l-.854.853V13h4V7.118a.5.5 0 0 0-.276-.447l-.895-.447A1.5 1.5 0 0 1 12 4.882V4h-2v1.5a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5V4zm4-1h2v-.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5V3zm4 11h-4v.5a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5V14zm-8 0H2v.5a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5V14z"/>
+							</svg>
+              				Review
+              			</a>
+              		{{/if}}
+              		
+              		{{#if metadata}}
+              			<a href="/edit/{{id}}" class="btn btn-primary btn-sm" role="button">
+	              			<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+							  <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5L13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175l-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+							</svg>
+              				Edit
+              			</a>
+              		{{/if}}
+              		
+          		</div>
+			</form>
+		</script>
 		
 		<main role="main">
 
@@ -86,11 +165,30 @@
 
 			<div class="container">
 			
+			
+				<h4>
+					Queue 
+					<span id="queuereload">
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-arrow-repeat" viewBox="0 0 16 16">
+	  						<path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41zm-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9z"/>
+	  						<path fill-rule="evenodd" d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5.002 5.002 0 0 0 8 3zM3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9H3.1z"/>
+						</svg>
+					</span>
+				</h4>
+				<div id="queue">
+						
+				</div>
+				
 			 	<h4>Dateien</h4>
 			 	<h5>Inbound</h5>
 				<div id="inbound">
 						
 				</div>
+				<h5>Base</h5>
+				<div id="base">
+						
+				</div>
+				
 				
 			 	<h4>Search Subtitle on opensubtitle.org </h4>
 			 	
@@ -163,6 +261,28 @@
 			});
 
 
+			var queueSource = document.getElementById("queue-template").innerHTML;
+		    var queueTemplate = Handlebars.compile(queueSource);
+			function readQueue()
+		    {
+		    	$("#queue").empty();
+			    $.get( "/api/v1/queue-list/"+movieId, function( data ) {
+			    	var l = data.length;
+			        
+            		for(var i = 0;i < l;i++)
+            		{
+            			console.log(data[i]);
+            			var queueObj = $(queueTemplate(data[i]));	
+	 					$("#queue").append(queueObj);
+            		}
+			    });
+		    }
+			$("#queuereload").click(function(ev) {
+				ev.preventDefault();
+				readQueue();		
+			});
+			
+			readQueue();
 
    			var inboundSource = document.getElementById("inbound-template").innerHTML;
 		    var inboundTemplate = Handlebars.compile(inboundSource);
@@ -178,7 +298,8 @@
 	 					var inboundObj = $(inboundTemplate({ 
 	 						name: data[i].name,
 	 						language: data[i].language,
-	 						charset: data[i].charset
+	 						charset: data[i].charset,
+	 						md5: data[i].md5.substring(0,10)+"..."
 	 					}));	
 	 					
 	 					
@@ -214,12 +335,60 @@
 	 				
 	 			});
 		    }
-
 			readInbound();
 
  		
-        
-        
+ 		 	var baseSource = document.getElementById("base-template").innerHTML;
+		    var baseTemplate = Handlebars.compile(baseSource);
+        	function readBase()
+		    {
+		    	$("#base").empty();
+		    	$.get( "/api/v1/base-list/"+movieId, function( data ) {
+
+            		var l = data.length;
+            		for(var i = 0;i < l;i++)
+            		{
+            			console.log(data[i]);
+
+            			var translate = undefined;
+            			var source = undefined;
+            			var target = undefined;
+            			
+            			var m = data[i].name.match(/paragraphs-([a-z]{2,2})[.]json/);
+            			if(m) {
+            			    source = m[1];
+            				translate = ["en","de","es"].filter(item => item !== source);
+            			}
+            				
+            			var m = data[i].name.match(/paragraphs-([a-z]{2,2})[.]([a-z]{2,2})[.]po/);
+            			if(m) {
+            			    source = m[1];
+            			    target = m[2];
+            			}
+            			
+            			var baseObj = $(baseTemplate({
+            				name: data[i].name,
+            				source: source,
+            				target: target,
+            				translate : translate,
+            				metadata: data[i].name == "metadata.json",
+            				id : movieId
+            			}));	
+            			
+            			baseObj.find(".translate").click(function(ev) {
+				    		ev.preventDefault();
+				    		var dataString = $(this).closest("form").serialize();
+				    		$.get( "/api/v1/base-translate/"+movieId+"?"+dataString, function( data ) {
+				 				console.log(data);
+				 				//update queue
+							});
+				    	});
+            			
+            			$("#base").append(baseObj);
+            		}
+        		});
+        	}
+        	readBase();
         
             var downloadSource = document.getElementById("download-template").innerHTML;
 		    var downloadTemplate = Handlebars.compile(downloadSource);
@@ -230,6 +399,7 @@
             	var language = $("#search-subtitle-form").find('select[name ="language"]').val();
             	$.get( "/api/v1/opensubtitle/"+movieId+"?language="+language, function( data ) {
             	
+            		$("#results").empty();
             		var l = data.length;
             		for(var i = 0;i < l;i++)
             		{

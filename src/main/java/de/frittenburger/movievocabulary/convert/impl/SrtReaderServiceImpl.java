@@ -10,10 +10,13 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.springframework.stereotype.Service;
+
 import de.frittenburger.movievocabulary.convert.interfaces.Filter;
 import de.frittenburger.movievocabulary.convert.interfaces.SrtReaderService;
 import de.frittenburger.movievocabulary.model.SrtRecord;
 
+@Service
 public class SrtReaderServiceImpl implements SrtReaderService {
 
 	private static final String UTF8_BOM = "\uFEFF";
