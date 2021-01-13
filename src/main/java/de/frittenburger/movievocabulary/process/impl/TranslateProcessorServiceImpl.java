@@ -13,7 +13,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.frittenburger.movievocabulary.interfaces.MovieDatabase;
-import de.frittenburger.movievocabulary.model.IMDbId;
+import de.frittenburger.movievocabulary.model.VideoId;
 import de.frittenburger.movievocabulary.model.Language;
 import de.frittenburger.movievocabulary.model.Paragraph;
 import de.frittenburger.movievocabulary.model.PoFile;
@@ -21,7 +21,6 @@ import de.frittenburger.movievocabulary.model.Sentence;
 import de.frittenburger.movievocabulary.model.Token;
 import de.frittenburger.movievocabulary.process.interfaces.ProcessorService;
 import de.frittenburger.movievocabulary.process.interfaces.ProcessorTask;
-import de.frittenburger.movievocabulary.translate.impl.TranslateServiceImpl;
 import de.frittenburger.movievocabulary.translate.interfaces.TranslateService;
 
 @Service
@@ -43,7 +42,7 @@ public class TranslateProcessorServiceImpl implements ProcessorService {
 		
 		File paragraphFile = translateTask.getFile();
 		
-		IMDbId iMDbId = translateTask.getId();		
+		VideoId iMDbId = translateTask.getId();		
 		Language sourceLanguage = translateTask.getSourceLanguage();
 		Language targetLanguage = translateTask.getTargetLanguage();
 

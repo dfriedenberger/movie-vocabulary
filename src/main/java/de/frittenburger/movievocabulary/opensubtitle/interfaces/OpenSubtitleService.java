@@ -10,7 +10,6 @@ import de.frittenburger.movievocabulary.opensubtitle.model.OpenSubtitle;
 
 public interface OpenSubtitleService {
 
-
 	List<OpenSubtitle> search(IMDbId iMDbId, String language) throws XmlRpcException, IOException;
 
 }

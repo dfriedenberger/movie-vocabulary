@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import de.frittenburger.movievocabulary.impl.MovieDatabaseImpl;
 import de.frittenburger.movievocabulary.interfaces.MovieDatabase;
+import de.frittenburger.movievocabulary.model.VideoId;
+import de.frittenburger.movievocabulary.model.YoutubeId;
 import de.frittenburger.movievocabulary.model.IMDbId;
 import de.frittenburger.movievocabulary.model.MovieMetadata;
 
@@ -31,30 +33,33 @@ public class AdminController {
 
 	private final MovieDatabase movieDatabase = new MovieDatabaseImpl(new File("data"));
 
-	@RequestMapping("/search")
-	public String searchMovie(@RequestHeader Map<String, String> headers, Map<String, Object> model, HttpServletRequest request) {
-		return "search";
-	}
 	
+	@RequestMapping("/list")
+	public String listMovies() {
+		return "admin/index";
+	}
+		
 	
 	@RequestMapping(value = "/create/{id}", method = RequestMethod.GET)
 	public String createMovie(@RequestHeader Map<String, String> headers,HttpServletRequest request,Map<String, Object> model,@PathVariable(value="id") String id)  {
 	  
 		
 		try {
-			 IMDbId iMDbId = IMDbId.parse(id);
-			 if(movieDatabase.exists(iMDbId))
+			 VideoId videoId = VideoId.parse(id);
+			 if(movieDatabase.exists(videoId))
 			 {
-				 return "redirect:/edit/"+iMDbId.getId();
+				 return "redirect:/edit/"+videoId.getId();
 			 }
 			 
-			 movieDatabase.create(iMDbId);
 			 
-			 
-			 model.put("movieId", iMDbId.getId());
-			 model.put("url", "/api/v1/omdb");
+			 model.put("movieId", videoId.getId());
+			 if(videoId instanceof IMDbId)
+				 model.put("url", "/api/v1/omdb");
+			 if(videoId instanceof YoutubeId)
+				 model.put("url", "/api/v1/youtube");
+
 			 return "edit";
-		} catch (ParseException | IOException e) {
+		} catch (ParseException e) {
 			logger.error(e);
 			throw new InternalErrorException();
 		}
@@ -67,7 +72,7 @@ public class AdminController {
 	  
 		
 		try {
-			 IMDbId iMDbId = IMDbId.parse(id);
+			 VideoId iMDbId = VideoId.parse(id);
 			 model.put("movieId", iMDbId.getId());
 			 model.put("url", "/api/v1/read");
 			 return "edit";
@@ -83,7 +88,7 @@ public class AdminController {
 	public String listFilesMovie(@RequestHeader Map<String, String> headers,HttpServletRequest request,Map<String, Object> model,@PathVariable(value="id") String id)  {
 	  
 		try {
-			 IMDbId iMDbId = IMDbId.parse(id);
+			 VideoId iMDbId = VideoId.parse(id);
 			 model.put("movieId", iMDbId.getId());
 			 return "files";
 		} catch (ParseException e) {
@@ -107,9 +112,13 @@ public class AdminController {
 	            metadata.put(name, value);
 	        }
 			           
-	        IMDbId iMDbId = IMDbId.parse(metadata.get("imdbId"));
-			movieDatabase.updateMetadata(iMDbId,metadata);
-			return "redirect:/files/"+iMDbId.getId();
+	        VideoId videoId = VideoId.parse(metadata.get("imdbId"));
+	        
+	        if(!movieDatabase.exists(videoId))
+	        	movieDatabase.create(videoId);
+
+			movieDatabase.updateMetadata(videoId,metadata);
+			return "redirect:/files/"+videoId.getId();
 
 		} catch(ParseException | IOException e) {
 			

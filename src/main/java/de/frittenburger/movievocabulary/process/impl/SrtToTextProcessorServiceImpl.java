@@ -20,7 +20,7 @@ import de.frittenburger.movievocabulary.convert.interfaces.NlpService;
 import de.frittenburger.movievocabulary.convert.interfaces.SrtCompressService;
 import de.frittenburger.movievocabulary.convert.interfaces.SrtReaderService;
 import de.frittenburger.movievocabulary.interfaces.MovieDatabase;
-import de.frittenburger.movievocabulary.model.IMDbId;
+import de.frittenburger.movievocabulary.model.VideoId;
 import de.frittenburger.movievocabulary.model.Language;
 import de.frittenburger.movievocabulary.model.Paragraph;
 import de.frittenburger.movievocabulary.model.SrtRecord;
@@ -60,7 +60,7 @@ public class SrtToTextProcessorServiceImpl implements ProcessorService {
 		ConverterTask srtToTextTask = ConverterTask.class.cast(task);
 		
 		File srtFile = srtToTextTask.getFile();
-		IMDbId iMDbId = srtToTextTask.getId();
+		VideoId iMDbId = srtToTextTask.getId();
 		
 		Charset charset = encodingDetector.detect(srtFile);
 		logger.info("detected charset {} for file {}",charset,srtFile);
@@ -78,7 +78,7 @@ public class SrtToTextProcessorServiceImpl implements ProcessorService {
 		
 		//Create Paragraphs
 		List<Paragraph> paragraphs = new ArrayList<>();
-		for(var i = 0;i < records.size();i++)
+		for(int i = 0;i < records.size();i++)
 		{
 			SrtRecord rec = records.get(i);
 			Paragraph paragraph = nlpService.parse(language,rec.joinText());

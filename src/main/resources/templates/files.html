@@ -253,7 +253,7 @@
       
    			var movieId = '[[${movieId}]]';
    			
-			$.get( "/api/v1/omdb/"+movieId, function( data ) {
+			$.get( "/api/v1/read/"+movieId, function( data ) {
  				console.log(data);
 	   			$('#title').text(data.title);
 	   			$('#year').text(data.year);
@@ -360,7 +360,7 @@
             				translate = ["en","de","es"].filter(item => item !== source);
             			}
             				
-            			var m = data[i].name.match(/paragraphs-([a-z]{2,2})[.]([a-z]{2,2})[.]po/);
+            			var m = data[i].name.match(/translation-([a-z]{2,2})[.]([a-z]{2,2})[.]po/);
             			if(m) {
             			    source = m[1];
             			    target = m[2];

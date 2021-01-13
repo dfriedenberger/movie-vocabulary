@@ -65,6 +65,13 @@
 			<artifactId>spring-boot-starter-jetty</artifactId>
 		</dependency>
 		
+		<dependency>
+  			<groupId>org.springframework.boot</groupId>
+  			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+
+		
+		
 	    <!-- for health check /actuator/health -->
 		<dependency>
     		<groupId>org.springframework.boot</groupId>
@@ -89,6 +96,12 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
 			<optional>true</optional>
+		</dependency>
+		
+		<dependency>
+  			<groupId>org.springframework.security</groupId>
+  			<artifactId>spring-security-test</artifactId>
+  			<scope>test</scope>
 		</dependency>
 		
 		<!-- apache commons IO -->
@@ -120,6 +133,30 @@
   			<version>2.4</version>
 		</dependency>	
 			
+			
+			
+		<!-- https://mvnrepository.com/artifact/com.google.api-client/google-api-client -->
+		<dependency>
+    		<groupId>com.google.api-client</groupId>
+    		<artifactId>google-api-client</artifactId>
+    		<version>1.31.1</version>
+		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/com.google.oauth-client/google-oauth-client-jetty -->
+		<dependency>
+    		<groupId>com.google.oauth-client</groupId>
+    		<artifactId>google-oauth-client-jetty</artifactId>
+    		<version>1.31.2</version>
+		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/com.google.apis/google-api-services-youtube -->
+		<dependency>
+		    <groupId>com.google.apis</groupId>
+		    <artifactId>google-api-services-youtube</artifactId>
+		    <version>v3-rev222-1.25.0</version>
+		</dependency>
+		
+		
 		<!-- Test -->
         <!-- assertj - Fluent assertions for java-->
 		<dependency>

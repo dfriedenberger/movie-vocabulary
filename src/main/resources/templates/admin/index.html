@@ -1,0 +1,234 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+	
+		<title>Videoübersicht</title>
+	
+		<!-- Required meta tags -->
+	    <meta charset="utf-8">
+	    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	
+	    <!-- Bootstrap CSS -->
+	    <link rel="stylesheet" href="/css/bootstrap-4.5.0.min.css">
+	    <link rel="stylesheet" href="/css/vorlage.css">
+		
+	</head>
+	
+	
+	<body>
+
+		<!-- handlebar templates -->
+	 	<script id="movie-item-template" type="text/x-handlebars-template">
+	 	
+		 	<div class="row">
+				<div class="col-sm-8">
+			 		<span>{{title}}</span>
+				</div>
+				<div class="col-sm-2">
+			 		<span>{{details}}</span>
+				</div>
+				<div class="col-sm-2">
+			 		<a href="/files/{{id}}">{{id}}</a>		 		
+				</div>
+			</div>
+		</script>
+
+		<script id="movie-result-template" type="text/x-handlebars-template">
+		 	<li class="media my-4">
+			    <img class="mr-3" width="50" src="{{poster}}">
+			    <div class="media-body">
+			      <h5 class="mt-0 mb-1">{{title}} / {{year}}</h5>
+			 	  <a class="btn btn-primary" href="/create/{{imdbID}}">Erzeugen</a>
+			    </div>
+	  		</li>
+		</script>
+
+
+
+
+		<main role="main">
+
+		
+	
+			<!-- Main jumbotron for a primary marketing message or call to action -->
+			<div class="jumbotron">
+				<div class="container">
+					<h1>Video-Übersicht</h1>
+					<p>Hier hast du die Möglichkeit nach Videos zu suchen und siehst die bereits vorhandenen Videos</p>
+				</div>
+			</div>
+
+			<div class="container">
+			
+			
+				<h4>Suche (engl. Title)</h4>
+				<div class="row">
+					<div class="col-sm-10">
+						<!-- Search form -->
+						<input id="search" class="form-control" type="text" placeholder="Search Movies" aria-label="Search">
+					</div>
+						
+					<div class="col-sm-2">
+						<input id="search-btn" class="btn btn-primary form-control" type="submit" value="Suche">
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-sm-10">
+						<ul id="results" class="list-unstyled">
+						
+						</ul>
+					</div>
+				</div>
+				<h4>Erstellen</h4>
+				<div class="row">
+					<div class="col-sm-4">
+						<input id="create" class="form-control" type="text" placeholder="IMDB-Id oder Youtube-Id">
+					</div>
+					<div class="col-sm-2">
+						<input id="create-btn" class="btn btn-primary form-control" type="submit" value="Erzeugen">
+					</div>
+				</div>
+			
+			
+				<h4>Vorhandene Videos</h4>
+				<div id="movies">
+						
+				</div>
+				
+				<form th:action="@{/logout}" method="post">
+	            	<input class="btn btn-primary" type="submit" value="Logout"/>
+	        	</form>
+			<div>
+
+
+
+			
+		</main>
+
+
+		<footer class="container">
+			<p>&copy; frittenburger.de 2020</p>
+		</footer>
+
+
+		<script src="/js/jquery-3.4.1.min.js"></script>
+		<script src="/js/bootstrap-4.5.3.bundle.min.js"></script>
+		<script src="/js/handlebars-v4.1.2.js"></script>
+		
+	   <script>
+	   
+   	   
+	   $( document ).ready(function() {
+      
+   
+		    var movieItemTemplate = Handlebars.compile(document.getElementById("movie-item-template").innerHTML);
+   		    var movieResultTemplate = Handlebars.compile(document.getElementById("movie-result-template").innerHTML);
+   
+			//Show available movies
+            $.get( "/api/v1/list", function( data ) {
+				console.log(data);
+				var l = data.length;
+				for(var i = 0;i < l;i++)
+				{
+					var m = data[i];
+					var details = "";
+					
+					var ll = m.languages.length;
+					for(var ii = 0;ii < ll;ii++)
+					{
+						var language = m.languages[ii];
+						console.log(language.language.longName);
+						console.log(language.statistics.validatedsentences +"/"+ language.statistics.sentences);
+						details += language.language.longName + " (" + language.statistics.validatedsentences +"/"+ language.statistics.sentences+") ";
+						
+					}
+					
+					var movie = $(movieItemTemplate({ 
+					    	id: m.id,
+					        title: m.metadata.title,
+					        details: details
+					        
+					}));
+					$("#movies").append(movie);
+				}
+			});
+
+			//Create Entry from Id
+			function create()
+			{
+				var id = $("#create").val();
+				console.log("create",id);
+				  $.get( "/api/v1/validate/"+id, function( data ) {
+					console.log(data);
+					$(location).attr('href', '/create/'+id);
+				});
+			}
+			
+			//Eventhandler for input and button
+			$("#create-btn").click(function(e) {
+			    e.preventDefault();
+			    create();
+			});
+			
+			$("#create").on('keypress',function(e) {
+			    if(e.which != 13) return;
+			    e.preventDefault();
+			    create();
+			});
+			
+			//Search videos 
+			function search()
+			{
+				  var q = $("#search").val();
+				  console.log("search",q);
+				  
+				  $.get( "/api/v1/search?q="+q, function( data ) {
+					console.log(data);
+					
+					$("#results").empty();
+					if(data.status == "Error")
+					{
+						$("#results").append(data.error);
+						return;
+					}
+					
+					var l = data.movies.length;
+					for (var i = 0; i < l; i++) {
+						
+			   			var movie = data.movies[i];
+			   			console.log(movie);
+			   			
+			   			var poster = movie.poster;
+			   			if(poster == "N/A")
+			   				poster = "/img/noposter.png"
+			   			
+			   			var movieObj = $(movieResultTemplate({ 
+			    			title: movie.title,
+			    			year: movie.year,
+			    			imdbID: movie.imdbID,
+			    			poster: poster
+			    		}));
+			    		
+			    		$("#results").append(movieObj);
+					}
+				});
+			}
+			
+			//Eventhandler for input and button
+			$("#search-btn").click(function(e) {
+			    e.preventDefault();
+			    search();
+			});
+			
+			$("#search").on('keypress',function(e) {
+			    if(e.which != 13) return;
+			    e.preventDefault();
+				search();		    
+			});
+			
+	   });
+	   </script>
+
+	</body>
+
+</html>

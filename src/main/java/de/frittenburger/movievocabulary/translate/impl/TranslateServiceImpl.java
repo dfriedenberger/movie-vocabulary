@@ -1,11 +1,9 @@
 package de.frittenburger.movievocabulary.translate.impl;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -25,9 +23,7 @@ import org.apache.logging.log4j.Logger;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import de.frittenburger.movievocabulary.convert.impl.ConvertConfig;
 import de.frittenburger.movievocabulary.model.Language;
-import de.frittenburger.movievocabulary.model.Paragraph;
 import de.frittenburger.movievocabulary.translate.interfaces.TranslateService;
 
 public class TranslateServiceImpl implements TranslateService {

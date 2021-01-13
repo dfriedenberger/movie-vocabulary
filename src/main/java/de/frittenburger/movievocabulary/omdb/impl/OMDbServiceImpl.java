@@ -28,7 +28,7 @@ public class OMDbServiceImpl implements OMDbService {
 	private static final Logger logger = LogManager.getLogger(OMDbServiceImpl.class);
 
 	private final String apiKey;
-	private String url;
+	private final String url;
 	
 	private final static Function<JsonNode,List<OMDbMovie>>  convertMovieList = new JsonToMovieListMapper();
 	private final static Function<JsonNode,OMDbMovieInfo>  convertMovieInfo = new JsonToMovieInfoMapper();

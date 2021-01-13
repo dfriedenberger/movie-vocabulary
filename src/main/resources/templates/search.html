@@ -38,16 +38,7 @@
 
 			<div class="container">
 			
-				
-				<div class="row">
-					<div class="col">
-						<!-- Search form -->
-						<input id="search" class="form-control" type="text" placeholder="Search Movies" aria-label="Search">
-						<ul id="movies" class="list-unstyled">
-					
-						</ul>
-					</div>
-				</div>
+			
 				
 							                
  
@@ -75,35 +66,7 @@
             var movieSource = document.getElementById("movie-template").innerHTML;
 		    var movieTemplate = Handlebars.compile(movieSource);
 
-			$("#search").on('keypress',function(e) {
-			    if(e.which == 13) {
-			        $.get( "/api/v1/search?q="+$(this).val(), function( data ) {
-						console.log(data);
-						
-						$("#movies").empty();
-						
-						var l = data.movies.length;
-						for (var i = 0; i < l; i++) {
-							
-				   			var movie = data.movies[i];
-				   			console.log(movie);
-				   			
-				   			var poster = movie.poster;
-				   			if(poster == "N/A")
-				   				poster = "/img/noposter.png"
-				   			
-				   			var movieObj = $(movieTemplate({ 
-				    			title: movie.title,
-				    			year: movie.year,
-				    			imdbID: movie.imdbID,
-				    			poster: poster
-				    		}));
-				    		
-				    		$("#movies").append(movieObj);
-						}
-					});
-			    }
-			});
+		
 			
 	   });
 	   </script>

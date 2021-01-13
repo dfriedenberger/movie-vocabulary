@@ -132,6 +132,8 @@ public class ProcessorImpl implements Processor {
 				status.setRef("null");
 				if(task instanceof ConverterTask) 
 					status.setRef(ConverterTask.class.cast(task).getFile().getPath());
+				if(task instanceof TranslateTask)
+					status.setRef(TranslateTask.class.cast(task).getFile().getPath());
 				status.setStatus(task.getProcessorTaskStatus().toString());
 				status.setProgress(task.getProgress());
 			}

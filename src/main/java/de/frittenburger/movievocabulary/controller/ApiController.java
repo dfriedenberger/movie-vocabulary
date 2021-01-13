@@ -1,12 +1,10 @@
 package de.frittenburger.movievocabulary.controller;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -48,8 +46,11 @@ import de.frittenburger.movievocabulary.inbound.interfaces.DownloadService;
 import de.frittenburger.movievocabulary.inbound.interfaces.ImportService;
 import de.frittenburger.movievocabulary.interfaces.MovieDatabase;
 import de.frittenburger.movievocabulary.interfaces.ReadabilityIndexService;
+import de.frittenburger.movievocabulary.interfaces.StatisticCounterService;
 import de.frittenburger.movievocabulary.model.Card;
 import de.frittenburger.movievocabulary.model.IMDbId;
+import de.frittenburger.movievocabulary.model.VideoId;
+import de.frittenburger.movievocabulary.model.YoutubeId;
 import de.frittenburger.movievocabulary.model.Language;
 import de.frittenburger.movievocabulary.model.MovieMetadata;
 import de.frittenburger.movievocabulary.model.Paragraph;
@@ -68,6 +69,8 @@ import de.frittenburger.movievocabulary.process.impl.TranslateTask;
 import de.frittenburger.movievocabulary.process.interfaces.Processor;
 import de.frittenburger.movievocabulary.process.interfaces.ProcessorServiceType;
 import de.frittenburger.movievocabulary.process.model.TaskStatus;
+import de.frittenburger.movievocabulary.youtube.interfaces.YoutubeService;
+import de.frittenburger.movievocabulary.youtube.model.YoutubeVideoInfo;
 
 
 
@@ -93,6 +96,9 @@ public class ApiController {
 	private OMDbService omdbService;
 	
 	@Autowired
+	private YoutubeService youtubeService;
+	
+	@Autowired
 	private OpenSubtitleService openSubtitleService;
 	
 	@Autowired
@@ -106,6 +112,53 @@ public class ApiController {
 
 	@Autowired
 	private MD5Service md5Service;
+	
+	@Autowired
+	private StatisticCounterService statisticCounterService;
+	
+	
+	
+	@RequestMapping(value = "list", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public List<Map<String,Object>> listMovies(HttpServletRequest request)
+	{
+		try {
+			List<Map<String,Object>> movies = new ArrayList<>();
+			List<VideoId> videoIds = movieDatabase.list();
+			for(VideoId videoId : videoIds)
+			{
+				Map<String,Object> movie = new HashMap<>();
+				movie.put("id", videoId.getId());
+				movies.add(movie);
+
+				MovieMetadata md = movieDatabase.readMetadata(videoId);
+				movie.put("metadata", md);
+				
+				List<Map<String,Object>> langDataList = new ArrayList<>();
+				List<Language> languages = movieDatabase.getParagraphLanguages(videoId);
+				for(Language language : languages)
+				{
+					Map<String,Object> langData = new HashMap<>();
+
+					langData.put("language", language);
+					List<Paragraph> paragraphs = movieDatabase.readParagraphs(videoId,language);
+					Map<String,Integer> statistics = statisticCounterService.count(paragraphs);
+					langData.put("statistics", statistics);
+
+					langDataList.add(langData);
+				}
+				movie.put("languages", langDataList);
+			}
+			return movies;
+			
+		} catch (IOException e) {
+			logger.error(e);			
+		}
+	
+		throw new InternalErrorException();		
+		
+		
+	}
 	
 	@RequestMapping(value = "/search", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
@@ -133,13 +186,35 @@ public class ApiController {
 		
 	}
 	
+	
+	@RequestMapping(value = "/validate/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public Map<String,Object> validateId(HttpServletRequest request, @PathVariable(value="id") String id)  {
+	
+
+		Map<String,Object> result = new HashMap<>();
+		try {
+			VideoId videoId = VideoId.parse(id);
+			
+			result.put("id",videoId.getId());
+			result.put("class",videoId.getClass().getSimpleName());
+			result.put("exists",movieDatabase.exists(videoId));
+			
+			return result;
+		} catch (ParseException e) {
+			logger.error(e);			
+		}
+		
+		throw new InternalErrorException();
+	}
+	
 	@RequestMapping(value = "/read/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public MovieMetadata readMetadata(HttpServletRequest request, @PathVariable(value="id") String id)  {
 	
 
 		try {
-			IMDbId iMDbId = IMDbId.parse(id);
+			VideoId iMDbId = VideoId.parse(id);
 			return movieDatabase.readMetadata(iMDbId);
 		} catch (ParseException | IOException e) {
 			logger.error(e);			
@@ -155,7 +230,7 @@ public class ApiController {
 	
 
 		try {
-			IMDbId iMDbId = IMDbId.parse(id);
+			IMDbId iMDbId = VideoId.parse(id,IMDbId.class);
 			return omdbService.get(iMDbId);
 		} catch (ParseException | IOException e) {
 			logger.error(e);			
@@ -164,13 +239,31 @@ public class ApiController {
 		throw new VideoNotFoundException();		
 	}
 	
+	
+	@RequestMapping(value = "/youtube/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public YoutubeVideoInfo youtubeInfo(HttpServletRequest request, @PathVariable(value="id") String id)  {
+	
+
+		try {
+			YoutubeId youtubeId = VideoId.parse(id,YoutubeId.class);
+			return youtubeService.get(youtubeId);
+		} catch (ParseException | IOException e) {
+			logger.error(e);			
+		}
+	
+		throw new VideoNotFoundException();		
+	}
+	
+	//
+	
+	
 	@RequestMapping(value = "/opensubtitle/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public List<OpenSubtitle> opensubtitleSearch(HttpServletRequest request, @PathVariable(value="id") String id,@RequestParam("language") String language)  {
 	
-
 		try {
-			IMDbId iMDbId = IMDbId.parse(id);
+			IMDbId iMDbId = VideoId.parse(id,IMDbId.class);
 			return openSubtitleService.search(iMDbId,language);
 		} catch (ParseException  | IOException | XmlRpcException e) {
 			logger.error(e);			
@@ -186,9 +279,9 @@ public class ApiController {
 	
 		List<Map<String,String>> list = new ArrayList<>();
 		try {
-			IMDbId iMDbId = IMDbId.parse(id);
+			VideoId videoId = VideoId.parse(id);
 			
-			File folder = movieDatabase.getInboundFolder(iMDbId);
+			File folder = movieDatabase.getInboundFolder(videoId);
 			
 			for(String name : folder.list())
 			{
@@ -227,9 +320,9 @@ public class ApiController {
 	
 		Map<String,Object> result = new HashMap<>();
 		try {
-			IMDbId iMDbId = IMDbId.parse(id);
+			VideoId videoId = VideoId.parse(id);
 			
-			File folder = movieDatabase.getInboundFolder(iMDbId);
+			File folder = movieDatabase.getInboundFolder(videoId);
 			File file = new File(folder,name);
 			if(file.exists())
 				result.put("delete", file.delete());
@@ -253,7 +346,7 @@ public class ApiController {
 	
 		Map<String,Object> result = new HashMap<>();
 		try {
-			IMDbId iMDbId = IMDbId.parse(id);
+			VideoId iMDbId = VideoId.parse(id);
 			
 			File inboundFolder = movieDatabase.getInboundFolder(iMDbId);
 			File srtFile = new File(inboundFolder,name);
@@ -276,7 +369,7 @@ public class ApiController {
 	
 		Map<String,Object> result = new HashMap<>();
 		try {
-			IMDbId iMDbId = IMDbId.parse(id);
+			VideoId iMDbId = VideoId.parse(id);
 			
 			File folder = movieDatabase.getInboundFolder(iMDbId);
 			File file = importService.importFile(folder, "zip", downloadService.getInputStream(url));
@@ -304,7 +397,7 @@ public class ApiController {
 		
 		try
 		{
-			IMDbId iMDbId = IMDbId.parse(id);
+			VideoId iMDbId = VideoId.parse(id);
 			File folder = movieDatabase.getInboundFolder(iMDbId);
 		
 		
@@ -332,10 +425,10 @@ public class ApiController {
 			@PathVariable(value="id") String id)  {
 	
 		try {
-			IMDbId iMDbId = IMDbId.parse(id);
+			VideoId.parse(id);
 			List<TaskStatus> tasks = processor.list();
 
-			//todo filter for iMDbId
+			//TODO filter for iMDbId
 			
 			return tasks;
 		} catch (ParseException e) {
@@ -354,9 +447,9 @@ public class ApiController {
 	
 		List<Map<String,String>> list = new ArrayList<>();
 		try {
-			IMDbId iMDbId = IMDbId.parse(id);
+			VideoId videoId = VideoId.parse(id);
 			
-			File folder = movieDatabase.getBaseFolder(iMDbId);
+			File folder = movieDatabase.getBaseFolder(videoId);
 			
 			for(File file : folder.listFiles())
 			{
@@ -385,7 +478,7 @@ public class ApiController {
 	
 		Map<String,Object> result = new HashMap<>();
 		try {
-			IMDbId iMDbId = IMDbId.parse(id);
+			VideoId iMDbId = VideoId.parse(id);
 			
 			File baseFolder = movieDatabase.getBaseFolder(iMDbId);
 			File paragraphFile = new File(baseFolder,name);
@@ -409,25 +502,16 @@ public class ApiController {
 	public Map<String,Integer> info(HttpServletRequest request,
 				@PathVariable(value="id") String id,@PathVariable(value="language") String language) throws IOException {
 		
-		Map<String,Integer> info = new HashMap<>();
 		try {
-			IMDbId iMDbId = IMDbId.parse(id);
+			VideoId iMDbId = VideoId.parse(id);
 			Language sourceLanguage = Language.parse(language);
 			List<Paragraph> paragraphs = movieDatabase.readParagraphs(iMDbId,sourceLanguage);
 		
 
-			info.put("paragraphs",paragraphs.size());
+			Map<String,Integer> info = statisticCounterService.count(paragraphs);
 
-			for(Paragraph paragraph : paragraphs)
-				for(Sentence sentence : paragraph.getSentences())
-				{
-					for(Token annotation : sentence.getTokens())
-					{
-						String key = annotation.getPartOfSpeech();
-						increment(info,key);
-						increment(info,"words");
-					}
-				}
+			
+		
 			return info;
 		} catch (ParseException | IOException e) {
 			logger.error(e);			
@@ -451,15 +535,7 @@ public class ApiController {
 		
 	}
 		
-	private void increment(Map<String, Integer> map, String key) {
 
-		if(!map.containsKey(key)) map.put(key, 0);
-		
-		int count = map.get(key);
-		count++;
-		map.put(key, count);
-		
-	}
 
 	//Data
 	@RequestMapping(value = "/vocabulary/{id}/{source}/{target}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -480,13 +556,14 @@ public class ApiController {
 		try {
 			
 		
-			IMDbId iMDbId = IMDbId.parse(id);
+			VideoId iMDbId = VideoId.parse(id);
 			Language sourceLanguage = Language.parse(source);
 			Language targetLanguage = Language.parse(target);
 			
 			List<Paragraph> paragraphs = movieDatabase.readParagraphs(iMDbId,sourceLanguage);
 			PoFile poFile = movieDatabase.readTranslation(iMDbId,sourceLanguage,targetLanguage);
-					
+			Set<String> validation = movieDatabase.readValidation(iMDbId,sourceLanguage,targetLanguage);
+
 			
 			List<TranslatedSentence> translatedSentenceList = new ArrayList<>();
 	
@@ -499,7 +576,7 @@ public class ApiController {
 			    	TranslatedSentence translatedSentence = new TranslatedSentence();
 			    	translatedSentence.setTokens(sentence.getTokens());
 			    	translatedSentence.setText(sentence.getText());
-			    	translatedSentence.setValidated(sentence.isValidated());
+			    	translatedSentence.setValidated(validation.contains(sentence.getText()));
 
 					int ri = service.calculate(sentence.getText());
 					translatedSentence.setReadingIndex(ri);
@@ -537,27 +614,32 @@ public class ApiController {
 		try
 		{
 		
-			IMDbId iMDbId = IMDbId.parse(id);
+			VideoId iMDbId = VideoId.parse(id);
 			Language sourceLanguage = Language.parse(source);
 			Language targetLanguage = Language.parse(target);
 			
 			List<Paragraph> paragraphs = movieDatabase.readParagraphs(iMDbId,sourceLanguage);
 			PoFile poFile = movieDatabase.readTranslation(iMDbId,sourceLanguage,targetLanguage);
 	
+			
+			Set<String> validation = movieDatabase.readValidation(iMDbId,sourceLanguage,targetLanguage);
+
 					
 			for(int ix = 0;ix < paragraphs.size();ix++)
 			{
 				Paragraph paragraph = paragraphs.get(ix);
 				for(Sentence sentence : paragraph.getSentences())
 				{
-
 					if(sentence.getText().equals(body.getText()))
 					{
 						//change annotation
 						sentence.setTokens(body.getTokens());
 						
 						//change Validated
-						sentence.setValidated(body.getValidated());
+						if(body.getValidated())
+							validation.add(sentence.getText());
+						else
+							validation.remove(sentence.getText());
 						
 						//change Translation
 						poFile.replace(sentence.getText(),body.getTranslation());
@@ -565,7 +647,8 @@ public class ApiController {
 						//save
 						movieDatabase.updateParagraphs(iMDbId,sourceLanguage, paragraphs);
 						movieDatabase.updateTranslation(iMDbId, sourceLanguage, targetLanguage, poFile);
-						
+						movieDatabase.updateValidation(iMDbId, sourceLanguage, targetLanguage, validation);
+
 						return body;
 					}
 				}
@@ -620,22 +703,4 @@ public class ApiController {
 		
 	}
 	
-	
-
-	
-	@RequestMapping(value = "/list-movies", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	@ResponseBody
-	public List<String> listMovies(HttpServletRequest request) throws IOException {
-	
-		return Arrays.asList(new File("data").list(new FilenameFilter() {
-
-				@Override
-				public boolean accept(File dir, String name) {
-					return new File(dir,name).isDirectory();
-				}
-
-		}));
-		
-		
-	}
 }

@@ -8,10 +8,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 public class Sentence {
 	
 	private String text;
-	
-	@JsonInclude(Include.NON_DEFAULT)
-	private boolean validated;
-	
+
 	private List<Token> tokens;
 
 	public String getText() {
@@ -20,15 +17,6 @@ public class Sentence {
 
 	public void setText(String text) {
 		this.text = text;
-	}
-
-	
-	public boolean isValidated() {
-		return validated;
-	}
-
-	public void setValidated(boolean validated) {
-		this.validated = validated;
 	}
 
 	public List<Token> getTokens() {
